@@ -7,6 +7,10 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.12"
+huddle01 = {path = "../shinigami/packages/huddle01-python", develop = true}
+python-dotenv = "^1.0.1"
+pydantic = "^2.10.2"
+ruff = "0.6.9"
 
 
 [build-system]
