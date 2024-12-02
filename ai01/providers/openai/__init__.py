@@ -1,6 +1,6 @@
-from .realtime import realtime_model
+from .realtime.realtime_model import RealTimeModel
 
-__all__ = ["realtime_model"]
+__all__ = ["RealTimeModel"]
 
 # Cleanup docs of unexported modules
 _module = dir()

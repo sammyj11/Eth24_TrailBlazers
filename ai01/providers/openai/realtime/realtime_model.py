@@ -1,2 +1,3 @@
-class RealTimeMode:
-    pass
+class RealTimeModel:
+    def __init__(self):
+        pass

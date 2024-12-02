@@ -1,9 +1,10 @@
-import os
 import asyncio
-from ai01.agent import Agent, AgentOptions
-from ai01.rtc import HuddleClientOptions, RTCOptions, Role, RoomEvents
+import os
 
 from dotenv import load_dotenv
+
+from ai01.agent import Agent, AgentOptions
+from ai01.rtc import HuddleClientOptions, Role, RoomEvents, RTCOptions
 
 load_dotenv()
 
