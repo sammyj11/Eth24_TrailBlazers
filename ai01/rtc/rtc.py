@@ -37,6 +37,7 @@ class RTCOptions(BaseModel):
     )
 
     metadata: dict[str, str] = Field(
+        default_factory=dict,
         description="Metadata to be sent to the Room",
     )
 
@@ -52,9 +53,16 @@ class RTC:
     """
 
     def __init__(self, options: RTCOptions):
+        logger.info("Initializing RTC Room: ", options.room_id)
+
         self._logger = logger.getChild(options.room_id)
 
         self._options = options
+
+        self._huddle_client = HuddleClient(
+            project_id=self._options.project_id,
+            options=self._options.huddle_client_options,
+        )
 
     def __str__(self):
         return f"RTC Room: {self._options.room_id}"
@@ -66,14 +74,22 @@ class RTC:
     def options(self):
         return self._options
 
-    async def join_room(self):
+    @property
+    def huddle_client(self):
+        return self._huddle_client
+
+    @property
+    def room(self):
+        return self._huddle_client.room
+
+    async def create(self):
         """
         Join Room is used to join the Room with the given Room Id,
 
         Exceptions:
             - If there is any error while joining the Room, it will raise an Exception.
         """
-        logger.info("Joining Huddle01 Room ", self._options.room_id)
+        self._logger.info("Creating Huddle01 Room ", self._options.room_id)
 
         accessTokenData = AccessTokenData(
             room_id=self._options.room_id,
@@ -91,14 +107,7 @@ class RTC:
         try:
             token = await accessToken.to_jwt()
 
-            client = HuddleClient(
-                project_id=self._options.project_id,
-                options=self._options.huddle_client_options,
-            )
-
-            room = await client.create(self._options.room_id, token)
-
-            logger.info("Successfully joined the Room: ", room)
+            room = await self.huddle_client.create(self._options.room_id, token)
 
             return room
         except Exception as e:
