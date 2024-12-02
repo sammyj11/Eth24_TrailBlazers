@@ -588,24 +588,22 @@ name = "huddle01"
 version = "1.0.2"
 description = ""
 optional = false
-python-versions = "^3.12"
-files = []
-develop = true
+python-versions = "<4.0,>=3.12"
+files = [
+    {file = "huddle01-1.0.2-py3-none-any.whl", hash = "sha256:5e964a57d32e8aa6cb29685fe96069ae409838fbdc4ee33603d143df6430a7a7"},
+    {file = "huddle01-1.0.2.tar.gz", hash = "sha256:e2d003cad25a61b4e6c961e53bfc34df0b578f189106c999c46287cb7a69818a"},
+]
 
 [package.dependencies]
-aiohttp = "^3.10.10"
-asyncio = "^3.4.3"
-protobuf = "^5.28.2"
+aiohttp = ">=3.10.10,<4.0.0"
+asyncio = ">=3.4.3,<4.0.0"
+protobuf = ">=5.28.2,<6.0.0"
 pydantic = ">=1.10.17,<3.0.0"
 pyee = "11.1.0"
-pymediasoup = "^1.1.0"
-python-dotenv = "^1.0.1"
-ruff = "^0.6.9"
-websockets = "^13.1"
-
-[package.source]
-type = "directory"
-url = "../shinigami/packages/huddle01-python"
+pymediasoup = ">=1.1.0,<2.0.0"
+python-dotenv = ">=1.0.1,<2.0.0"
+ruff = ">=0.6.9,<0.7.0"
+websockets = ">=13.1,<14.0"
 
 [[package]]
 name = "idna"
@@ -1336,4 +1334,4 @@ propcache = ">=0.2.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "86ad15cbdb7856fba654729d61de50c561b6591b8c30f4f0e014e5b6441981e8"
+content-hash = "8cac3cb29199154aac80a9992035f35e1421997f9c7ad1f17e26a01f3fb98474"

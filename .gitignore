@@ -2,5 +2,6 @@ pyrightconfig.json
 .ruff_cache
 .env
 secrets/
+dist/
 
 __pycache__/

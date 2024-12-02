@@ -1,17 +1,17 @@
 [tool.poetry]
 name = "ai01"
-version = "0.1.1a0"
+version = "0.2.0"
 description = ""
 authors = ["Om Gupta <omgupta0720@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.12"
-huddle01 = {path = "../shinigami/packages/huddle01-python", develop = true}
 python-dotenv = "^1.0.1"
 pydantic = "^2.10.2"
 ruff = "0.6.9"
 asyncio = "^3.4.3"
+huddle01 = "^1.0.2"
 
 
 [build-system]
