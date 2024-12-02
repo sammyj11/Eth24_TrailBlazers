@@ -12,6 +12,7 @@ pydantic = "^2.10.2"
 ruff = "0.6.9"
 asyncio = "^3.4.3"
 huddle01 = "^1.0.2"
+pyee = "11.1.0"
 
 
 [build-system]

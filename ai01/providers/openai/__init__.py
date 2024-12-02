@@ -1,12 +1,6 @@
-from .agent import Agent, AgentOptions
-from .rtc import RTC, RTCOptions
+from .realtime import realtime_model
 
-__all__ = [
-    "Agent",
-    "AgentOptions",
-    "RTC",
-    "RTCOptions",
-]
+__all__ = ["realtime_model"]
 
 # Cleanup docs of unexported modules
 _module = dir()
