@@ -1,14 +1,15 @@
 import json
 import logging
-from pydantic import BaseModel, Field
+
 from huddle01 import (
+    AccessToken,
+    AccessTokenData,
+    AccessTokenOptions,
     HuddleClient,
     HuddleClientOptions,
     Role,
-    AccessTokenOptions,
-    AccessToken,
-    AccessTokenData,
 )
+from pydantic import BaseModel, Field
 
 logging.basicConfig(level=logging.INFO)
 
