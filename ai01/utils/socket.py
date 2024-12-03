@@ -34,7 +34,7 @@ class SocketClient:
         self.__ws: Optional[websockets.WebSocketClientProtocol] = None
 
         # Logger for SocketClient.
-        self._logger = logger.getChild(f"socketClient-{self.url}")
+        self._logger = logger.getChild("socketClient")
 
         # JSON flag to determine if the messages are JSON or not.
         self.json = json

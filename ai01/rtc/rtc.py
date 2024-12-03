@@ -54,8 +54,6 @@ class RTC:
     """
 
     def __init__(self, options: RTCOptions):
-        logger.info("Initializing RTC Room: ", options.room_id)
-
         self._logger = logger.getChild(options.room_id)
 
         self._options = options
@@ -122,7 +120,7 @@ class RTC:
                 - `metadata`: Optional metadata for the Room (must be JSON serializable).
                 - `role`: The role of the local user in the Room (e.g., "host", "guest").
         """
-        self._logger.info("Creating Huddle01 Room ", self._options.room_id)
+        self._logger.info("Join Huddle01 dRTC Network")
 
         accessTokenData = AccessTokenData(
             room_id=self._options.room_id,

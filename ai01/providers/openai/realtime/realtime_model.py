@@ -1,5 +1,6 @@
 import asyncio
 import logging
+from typing import Literal
 
 from pydantic import BaseModel
 
@@ -55,6 +56,11 @@ class RealTimeModelOptions(BaseModel):
     output_audio_format: _api.AudioFormat = "pcm16"
     """
     Output Audio Format is the format of the audio, which is returned by the Model.
+    """
+
+    max_response_output_tokens: int | Literal["inf"] = 4096
+    """
+    Max Response Output Tokens is the maximum number of tokens in the response, defaults to 4096.
     """
 
     base_url: str = "wss://api.openai.com/v1/realtime"
@@ -129,7 +135,7 @@ class RealTimeModel:
                 "voice": opts.voice,
                 "input_audio_format": opts.input_audio_format,
                 "input_audio_transcription": {"model": "whisper-1"},
-                "max_response_output_tokens": 100,
+                "max_response_output_tokens": self._opts.max_response_output_tokens,
                 "modalities": opts.modalities,
                 "temperature": opts.temperature,
                 "tools": [],
@@ -154,9 +160,13 @@ class RealTimeModel:
         Connects the RealTimeModel to the RealTime API.
         """
         try:
-            self._logger.info(f"Connecting to RealTime API at {self._opts.base_url}")
+            self._logger.info(
+                f"Connecting to OpenAI RealTime Model at {self._opts.base_url}"
+            )
 
             await self.socket.connect()
+
+            self._logger.info("Connected to OpenAI RealTime Model")
 
         except _exceptions.RealtimeModelNotConnectedError as e:
             raise e

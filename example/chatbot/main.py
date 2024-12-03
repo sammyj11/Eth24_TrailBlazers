@@ -52,7 +52,10 @@ async def main():
             print("Room Joined")
 
         llm = RealTimeModel(
-            agent=agent, options=RealTimeModelOptions(oai_api_key=openai_api_key)
+            agent=agent,
+            options=RealTimeModelOptions(
+                oai_api_key=openai_api_key,
+            ),
         )
 
         await llm.connect()
