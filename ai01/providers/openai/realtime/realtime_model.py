@@ -1,12 +1,12 @@
 import asyncio
 import logging
 
-import _api
-import _exceptions
 from pydantic import BaseModel
 
 from ai01.agent import Agent
 from ai01.utils.socket import SocketClient
+
+from . import _api, _exceptions
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -82,6 +82,9 @@ class RealTimeModelOptions(BaseModel):
     Loop is the Event Loop to be used for the RealTimeModel, defaults to the current Event Loop.
     """
 
+    class Config:
+        arbitrary_types_allowed = True
+
 
 class RealTimeModel:
     def __init__(self, agent: Agent, options: RealTimeModelOptions):
@@ -95,7 +98,10 @@ class RealTimeModel:
         # Socket is the WebSocket connection to the RealTime API.
         self.socket = SocketClient(
             url=f"{self._opts.base_url}?model={self._opts.model}",
-            headers={"Authorization": f"Bearer {self._opts.oai_api_key}"},
+            headers={
+                "Authorization": f"Bearer {self._opts.oai_api_key}",
+                "OpenAI-Beta": "realtime=v1",
+            },
             loop=self.loop,
             json=True,
         )

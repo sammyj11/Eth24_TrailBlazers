@@ -2,8 +2,8 @@ from typing import Optional
 
 from aiortc.mediastreams import MediaStreamTrack
 from pydantic import BaseModel, Field
-from rtc import RTC, RTCOptions
 
+from ..rtc import RTC, RTCOptions
 from ._exceptions import RoomNotConnectedError, RoomNotCreatedError
 
 
@@ -21,6 +21,9 @@ class AgentOptions(BaseModel):
     )
 
     audio_track: Optional[MediaStreamTrack]
+
+    class Config:
+        arbitrary_types_allowed = True
 
 
 class Agent:

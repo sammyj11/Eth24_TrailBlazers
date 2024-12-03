@@ -117,7 +117,7 @@ class SocketClient:
         """
         Placeholder for handling messages, to be implemented by subclasses or instances.
         """
-        pass
+        self._logger.info(f"Received message: {message_data}")
 
     def close(self):
         """

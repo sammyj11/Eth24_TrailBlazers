@@ -1,4 +1,5 @@
 import asyncio
+import logging
 import os
 
 from dotenv import load_dotenv
@@ -9,6 +10,10 @@ from ai01.providers.openai.realtime import RealTimeModel, RealTimeModelOptions
 from ai01.rtc import HuddleClientOptions, Role, RoomEvents, RTCOptions
 
 load_dotenv()
+
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger("Chatbot")
 
 
 async def main():

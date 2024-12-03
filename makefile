@@ -19,6 +19,10 @@ test:
 	@echo "Running huddle01-ai tests"
 	@poetry run python -m tests.main
 
+chatbot:
+	@echo "Running huddle01-ai chatbot example"
+	@poetry run python -m example.chatbot.main
+
 run:
 	@echo "Running huddle01-ai conference example"
 	@poetry run python -m example.chatbot.main
