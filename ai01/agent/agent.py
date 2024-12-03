@@ -1,3 +1,5 @@
+from typing import Optional
+
 from aiortc.mediastreams import MediaStreamTrack
 from pydantic import BaseModel, Field
 from rtc import RTC, RTCOptions
@@ -18,7 +20,7 @@ class AgentOptions(BaseModel):
         description="RTC Options for the Agent",
     )
 
-    audio_track: MediaStreamTrack
+    audio_track: Optional[MediaStreamTrack]
 
 
 class Agent:

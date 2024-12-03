@@ -36,22 +36,21 @@ async def main():
             ),
         )
 
-        agent_options = AgentOptions(rtc_options=rtcOptions, audio_track=AudioTrack())
-
         agent = Agent(
-            agent_options,
+            options=AgentOptions(rtc_options=rtcOptions, audio_track=AudioTrack()),
         )
 
         room = await agent.join()
-
-        model_options = RealTimeModelOptions(oai_api_key=openai_api_key)
-
-        llm = RealTimeModel(agent=agent, options=model_options)
 
         @room.on(RoomEvents.RoomJoined)
         def on_room_joined():
             print("Room Joined")
 
+        llm = RealTimeModel(
+            agent=agent, options=RealTimeModelOptions(oai_api_key=openai_api_key)
+        )
+
+        await llm.connect()
         await agent.connect()
 
         # Force the program to run indefinitely

@@ -1,9 +1,15 @@
 import asyncio
+import logging
 
 import _api
+import _exceptions
 from pydantic import BaseModel
 
 from ai01.agent import Agent
+from ai01.utils.socket import SocketClient
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 class RealTimeModelOptions(BaseModel):
@@ -61,6 +67,16 @@ class RealTimeModelOptions(BaseModel):
     Tools are different other APIs which the Model can access, defaults to auto.
     """
 
+    server_vad_opts: _api.ServerVad = {
+        "type": "server_vad",
+        "threshold": 0.5,
+        "prefix_padding_ms": 1000,
+        "silence_duration_ms": 500,
+    }
+    """
+    Server VAD which means Voice Activity Detection is the configuration for the VAD, to detect the voice activity.
+    """
+
     loop: asyncio.AbstractEventLoop = asyncio.get_event_loop()
     """
     Loop is the Event Loop to be used for the RealTimeModel, defaults to the current Event Loop.
@@ -72,35 +88,73 @@ class RealTimeModel:
         # Agent is the instance which is interacting with the RealTimeModel.
         self.agent = agent
 
-        # API Key is the OpenAI API Key.
-        self.apiKey = options.oai_api_key
-
-        # Model is the RealTimeModel to be used.
-        self.model = options.model
-
-        # Instructions is the Initial Prompt given to the Model.
-        self.instructions = options.instructions
-
-        # Modalities is the list of things to be used by the Model.
-        self.modalities = options.modalities
-
-        # Voice is the of audio voices which will be generated and returned by the Model.
-        self.voice = options.voice
-
-        # Temperature is the randomness of the Model, to select the next token.
-        self.temperature = options.temperature
-
-        # Input Audio Format is the format of the input audio, which is given to the Model.
-        self.inputAudioFormat = options.input_audio_format
-
-        # Output Audio Format is the format of the audio, which is returned by the Model.
-        self.outputAudioFormat = options.output_audio_format
-
-        # Base URL is the URL of the RealTime API.
-        self.baseURL = f"${options.base_url}?model={self.model}"
-
-        # Tool Choice is the choice of the tools to be used by the Model.
-        self.toolChoice = options.tool_choice
-
+        self._opts = options
         # Loop is the Event Loop to be used for the RealTimeModel.
         self.loop = options.loop
+
+        # Socket is the WebSocket connection to the RealTime API.
+        self.socket = SocketClient(
+            url=f"{self._opts.base_url}?model={self._opts.model}",
+            headers={"Authorization": f"Bearer {self._opts.oai_api_key}"},
+            loop=self.loop,
+            json=True,
+        )
+
+        # Turn Detection is the configuration for the VAD, to detect the voice activity.
+        self.turn_detection = options.server_vad_opts
+
+        # Logger for RealTimeModel.
+        self._logger = logger.getChild(f"RealTimeModel-{self._opts.model}")
+
+    def session_update(self):
+        """
+        Session Updated is the Event Handler for the Session Update Event.
+        """
+        try:
+            self._logger.info("Send Session Updated ")
+
+            if not self.socket.connected:
+                raise _exceptions.RealtimeModelNotConnectedError()
+
+            opts = self._opts
+
+            session_data: _api.ClientEvent.SessionUpdateData = {
+                "instructions": self._opts.instructions,
+                "voice": opts.voice,
+                "input_audio_format": opts.input_audio_format,
+                "input_audio_transcription": {"model": "whisper-1"},
+                "max_response_output_tokens": 100,
+                "modalities": opts.modalities,
+                "temperature": opts.temperature,
+                "tools": [],
+                "turn_detection": opts.server_vad_opts,
+                "output_audio_format": opts.output_audio_format,
+                "tool_choice": opts.tool_choice,
+            }
+
+            payload: _api.ClientEvent.SessionUpdate = {
+                "session": session_data,
+                "type": "session.update",
+            }
+
+            self.loop.create_task(self.socket.send(payload))
+
+        except Exception as e:
+            self._logger.error(f"Error Sending Session Update Event: {e}")
+            raise
+
+    async def connect(self):
+        """
+        Connects the RealTimeModel to the RealTime API.
+        """
+        try:
+            self._logger.info(f"Connecting to RealTime API at {self._opts.base_url}")
+
+            await self.socket.connect()
+
+        except _exceptions.RealtimeModelNotConnectedError as e:
+            raise e
+
+        except Exception as e:
+            self._logger.error(f"Error connecting to RealTime API: {e}")
+            raise _exceptions.RealtimeModelSocketError()
