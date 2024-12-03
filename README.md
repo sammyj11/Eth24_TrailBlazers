@@ -3,6 +3,10 @@
 <img height=100 src="https://user-images.githubusercontent.com/34184939/167926050-f1e2db1d-49ae-4b51-bd98-68e09b45c5b1.svg"/>
 
 </p></a>
+<p align="center">
+  <strong>The dRTC Infra for AI.</strong>
+</p>
+
 <!-- End Banner -->
 
 # Overview 🚀
