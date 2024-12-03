@@ -95,6 +95,10 @@ class InputAudioTranscription(TypedDict):
     model: TranscriptionModels | str
 
 
+class InputRealTimeModel(TypedDict):
+    model: RealTimeModels
+
+
 class ServerVad(TypedDict):
     type: Literal["server_vad"]
     threshold: NotRequired[float]
@@ -580,6 +584,7 @@ ServerEvents = Union[
     ServerEvent.ResponseFunctionCallArgumentsDone,
     ServerEvent.RateLimitsUpdated,
 ]
+
 
 ClientEventType = Literal[
     "session.update",

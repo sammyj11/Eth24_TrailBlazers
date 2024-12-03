@@ -1,6 +1,6 @@
-from .realtime.realtime_model import RealTimeModel
+from .audio_track import AudioTrack
 
-__all__ = ["RealTimeModel"]
+__all__ = ["AudioTrack"]
 
 # Cleanup docs of unexported modules
 _module = dir()

@@ -83,12 +83,44 @@ class RTC:
     def room(self):
         return self._huddle_client.room
 
-    async def create(self):
+    async def join(self):
         """
-        Join Room is used to join the Room with the given Room Id,
+        Joins the dRTC Network and creates a Room for the local user.
+
+        This method establishes a connection to the dRTC Network and creates a Room instance for the local user.
+        The returned Room object allows you to listen to events such as:
+        - Remote peers joining or leaving the Room.
+        - Room-specific events triggered during its lifecycle.
+
+        Example Usage:
+            ```python
+            room = await rtc.join()
+
+
+            @room.on(RoomEvents.RoomJoined)
+            def on_room_join():
+                print("Room successfully joined!")
+            ```
+
+        Parameters:
+            None (all required options should be configured in `self._options`).
+
+        Returns:
+            Room: An instance representing the created Room, enabling event handling and interaction.
 
         Exceptions:
-            - If there is any error while joining the Room, it will raise an Exception.
+            Raises an Exception if there is an error while joining the Room.
+            Common issues may include:
+            - Invalid API key or room ID.
+            - Network connectivity problems.
+            - Issues during token generation or Room creation.
+
+        Notes:
+            - Ensure that `self._options` is correctly configured with the required fields:
+                - `room_id`: The unique identifier of the Room.
+                - `api_key`: Your Huddle01 API key.
+                - `metadata`: Optional metadata for the Room (must be JSON serializable).
+                - `role`: The role of the local user in the Room (e.g., "host", "guest").
         """
         self._logger.info("Creating Huddle01 Room ", self._options.room_id)
 

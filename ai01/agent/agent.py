@@ -1,12 +1,24 @@
+from aiortc.mediastreams import MediaStreamTrack
 from pydantic import BaseModel, Field
 from rtc import RTC, RTCOptions
+
 from ._exceptions import RoomNotConnectedError, RoomNotCreatedError
 
 
 class AgentOptions(BaseModel):
+    """ "
+    Every Agent is created with a set of options that define the configuration for the Agent.
+
+    Args:
+        rtc_options (RTCOptions): RTC Options for the Agent.
+        audio_track (MediaStreamTrack): Audio Stream Track for the Agent.
+    """
+
     rtc_options: RTCOptions = Field(
         description="RTC Options for the Agent",
     )
+
+    audio_track: MediaStreamTrack
 
 
 class Agent:
@@ -15,8 +27,8 @@ class Agent:
     interact with different Models and Outer World using dRTC.
 
     Agents can be connected to the dRTC Network by two stepsL
-     - Joining the Agent to the dRTC Network, which assigns the Agent to a Room, using this Agent can setup event Listeners before connecting to the Room.
-     - Connecting the Agent to the Room, which allows the Agent to send and receive data from the Room, and become part of the Room.
+        - Joining the Agent to the dRTC Network, which assigns the Agent to a Room, using this Agent can setup event Listeners before connecting to the Room.
+        - Connecting the Agent to the Room, which allows the Agent to send and receive data from the Room, and become part of the Room.
     """
 
     def __init__(self, options: AgentOptions):
@@ -26,6 +38,9 @@ class Agent:
         # RTC is the Real Time Communication Handler for the Agent.
         self.__rtc = RTC(options.rtc_options)
 
+        # Audio Track is the Audio Stream Track for the Agent.
+        self.audio_track = options.audio_track
+
     @property
     def rtc(self):
         return self.__rtc
@@ -33,7 +48,7 @@ class Agent:
     @property
     def room(self):
         """
-        Room is the Room the Agent is connected to, This is only available after the Agent is connected.
+        Room is the the abstraction under which every participant and the Agent is connected to, This is only available after the Agent is connected.
 
         raise ValueError if Agent is not connected to the Room.
         """
@@ -44,10 +59,24 @@ class Agent:
 
     async def join(self):
         """
-        Joins the Agent to the dRTC Network, Upon Joining the Agent is assigned to a Room.
-        Using the Room the Agent can Listen to Events such as RemotePeer Joining, Leaving and Produce Events Triggered in the Room
+        Joins the dRTC Network and creates a Room instance for the Agent.
+
+        This method establishes a connection to the dRTC Network and creates a Room instance for the agent.
+        The returned Room object allows you to listen to events such as:
+        - Remote peers joining or leaving the Room.
+        - Room-specific events triggered during its lifecycle.
+
+        Example Usage:
+            ```python
+            room = await agent.join()
+
+
+            @room.on(RoomEvents.RoomJoined)
+            def on_room_join():
+                print("Room successfully joined!")
+            ```
         """
-        room = await self.__rtc.create()
+        room = await self.__rtc.join()
 
         if not room:
             raise RoomNotConnectedError()
