@@ -3,7 +3,7 @@ from typing import TypedDict
 
 
 # AgentEventType is the Enum for the different types of Events emitted by the Agent.
-class AgentEventType(str):
+class AgentsEvents(str):
     AgentConnected: str = "agentConnected"
     AgentDisconnected: str = "agentDisconnected"
     AgentSpeaking: str = "agentSpeaking"
@@ -12,7 +12,7 @@ class AgentEventType(str):
 
 
 # AgentEvent is the Event which is emitted by the Agent.
-class AgentEvent:
+class AgentEventsData:
     class Connected(TypedDict):
         peer_id: str
 

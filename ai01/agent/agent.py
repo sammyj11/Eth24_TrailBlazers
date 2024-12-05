@@ -20,8 +20,14 @@ class AgentOptions(BaseModel):
     rtc_options: RTCOptions = Field(
         description="RTC Options for the Agent",
     )
+    """
+    RTC Options is the configuration for the RTC.
+    """
 
     audio_track: Optional[MediaStreamTrack]
+    """
+    Audio Track is the Audio Stream Track for the Agent.
+    """
 
     class Config:
         arbitrary_types_allowed = True

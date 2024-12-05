@@ -4,14 +4,10 @@ import os
 
 from dotenv import load_dotenv
 
-from ai01.agent import Agent, AgentEvent, AgentEventType, AgentOptions
+from ai01.agent import Agent, AgentEventsData, AgentOptions, AgentsEvents
 from ai01.providers.openai import AudioTrack
-from ai01.providers.openai.realtime import (
-    RealTimeModel,
-    RealTimeModelOptions,
-    ServerEvent,
-)
-from ai01.rtc import HuddleClientOptions, Role, RoomEvents, RoomEventsType, RTCOptions
+from ai01.providers.openai.realtime import RealTimeModel, RealTimeModelOptions
+from ai01.rtc import HuddleClientOptions, Role, RoomEvents, RoomEventsData, RTCOptions
 
 load_dotenv()
 
@@ -63,72 +59,67 @@ async def main():
         room = await agent.join()
 
         # Room Events
-        @room.on(RoomEventsType.RoomJoined)
-        def on_room_joined(data: RoomEvents.RoomJoined):
+        @room.on(RoomEvents.RoomJoined)
+        def on_room_joined(data: RoomEventsData.RoomJoined):
             print("Room Joined")
 
-        @room.on(RoomEventsType.NewPeerJoined)
-        def on_new_remote_peer(data: RoomEvents.NewPeerJoined):
+        @room.on(RoomEvents.NewPeerJoined)
+        def on_new_remote_peer(data: RoomEventsData.NewPeerJoined):
             logger.info(f"New Remote Peer: {data['remote_peer']}")
 
-        @room.on(RoomEventsType.RemotePeerLeft)
-        def on_peer_left(data):
-            logger.info(f"Peer Left: {data['peer_id']}")
+        @room.on(RoomEvents.RemotePeerLeft)
+        def on_peer_left(data: RoomEventsData.RemotePeerLeft):
+            logger.info(f"Peer Left: {data['remote_peer_id']}")
 
-        @room.on(RoomEventsType.RoomClosed)
-        def on_room_closed():
+        @room.on(RoomEvents.RoomClosed)
+        def on_room_closed(data: RoomEventsData.RoomClosed):
             logger.info("Room Closed")
 
-        @room.on(RoomEventsType.RemoteProducerAdded)
-        def on_remote_producer_added(data: RoomEvents.RemoteProducerAdded):
+        @room.on(RoomEvents.RemoteProducerAdded)
+        def on_remote_producer_added(data: RoomEventsData.RemoteProducerAdded):
             logger.info(f"Remote Producer Added: {data['producer_id']}")
 
-        @room.on(RoomEventsType.RemoteProducerClosed)
-        def on_remote_producer_closed(data: RoomEvents.RemoteProducerClosed):
+        @room.on(RoomEvents.RemoteProducerClosed)
+        def on_remote_producer_closed(data: RoomEventsData.RemoteProducerClosed):
             logger.info(f"Remote Producer Closed: {data['producer_id']}")
 
-        @room.on(RoomEventsType.RemoteConsumerAdded)
-        def on_remote_consumer_added(data: RoomEvents.RemoteConsumerAdded):
+        @room.on(RoomEvents.NewConsumerAdded)
+        def on_remote_consumer_added(data: RoomEventsData.NewConsumerAdded):
             logger.info(f"Remote Consumer Added: {data['consumer_id']}")
 
-        @room.on(RoomEventsType.RemoteConsumerClosed)
-        def on_remote_consumer_closed(data: RoomEvents.RemoteConsumerClosed):
+        @room.on(RoomEvents.ConsumerClosed)
+        def on_remote_consumer_closed(data: RoomEventsData.ConsumerClosed):
             logger.info(f"Remote Consumer Closed: {data['consumer_id']}")
 
-        @room.on(RoomEventsType.RemoteConsumerPaused)
-        def on_remote_consumer_paused(data: RoomEvents.RemoteConsumerPaused):
+        @room.on(RoomEvents.ConsumerPaused)
+        def on_remote_consumer_paused(data: RoomEventsData.ConsumerPaused):
             logger.info(f"Remote Consumer Paused: {data['consumer_id']}")
 
-        @room.on(RoomEventsType.RemoteConsumerResumed)
-        def on_remote_consumer_resumed(data: RoomEvents.RemoteConsumerResumed):
+        @room.on(RoomEvents.ConsumerResumed)
+        def on_remote_consumer_resumed(data: RoomEventsData.ConsumerResumed):
             logger.info(f"Remote Consumer Resumed: {data['consumer_id']}")
 
 
         # Agent Events
-        @agent.on(AgentEventType.AgentConnected)
-        def on_agent_connected(data: AgentEvent.Connected):
+        @agent.on(AgentsEvents.AgentConnected)
+        def on_agent_connected(data: AgentEventsData.Connected):
             logger.info(f"Agent Connected: {data['peer_id']}")
 
-        @agent.on(AgentEventType.AgentDisconnected)
-        def on_agent_disconnected(data: AgentEvent.Disconnected):
+        @agent.on(AgentsEvents.AgentDisconnected)
+        def on_agent_disconnected(data: AgentEventsData.Disconnected):
             logger.info(f"Agent Disconnected: {data['peer_id']}")
 
-        @agent.on(AgentEventType.AgentSpeaking)
-        def on_agent_speaking(data: AgentEvent.Speaking):
+        @agent.on(AgentsEvents.AgentSpeaking)
+        def on_agent_speaking(data: AgentEventsData.Speaking):
             logger.info(f"Agent Speaking: {data['peer_id']}")
 
-        @agent.on(AgentEventType.AgentListening)
-        def on_agent_listening(data: AgentEvent.Listening):
+        @agent.on(AgentsEvents.AgentListening)
+        def on_agent_listening(data: AgentEventsData.Listening):
             logger.info(f"Agent Listening: {data['peer_id']}")
 
-        @agent.on(AgentEventType.AgentThinking)
-        def on_agent_thinking(data: AgentEvent.Thinking):
+        @agent.on(AgentsEvents.AgentThinking)
+        def on_agent_thinking(data: AgentEventsData.Thinking):
             logger.info(f"Agent Thinking: {data['peer_id']}")
-
-        # LLM Events
-        @llm.on("test")
-        def on_test(data: ServerEvent.ConversationItemCreated):
-            pass
 
 
         # Connect to the LLM to the Room
