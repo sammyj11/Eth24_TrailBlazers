@@ -9,7 +9,8 @@ from huddle01 import (
     HuddleClientOptions,
     Role,
 )
-from pydantic import BaseModel, Field
+from huddle01.local_peer import ProduceOptions
+from pydantic import BaseModel
 
 logging.basicConfig(level=logging.INFO)
 
@@ -21,30 +22,35 @@ class RTCOptions(BaseModel):
     RTCOptions is the configuration for the Room.
     """
 
-    project_id: str = Field(
-        description="Huddle Project Id",
-    )
+    project_id: str
+    """
+    Project ID is the Huddle01 Project ID.
+    """
 
-    api_key: str = Field(
-        description="Huddle API Key",
-    )
+    api_key: str
+    """
+    API Key is the Huddle01 API Key.
+    """
+    
+    room_id: str
+    """
+    Room ID is the unique identifier of the Room.
+    """
 
-    room_id: str = Field(
-        description="Huddle Room Id to Join",
-    )
+    huddle_client_options: HuddleClientOptions
+    """
+    Huddle Client Options is the configuration for the Huddle Client.
+    """
 
-    huddle_client_options: HuddleClientOptions = Field(
-        description="Huddle Client Options",
-    )
+    metadata: dict[str, str]
+    """
+    Metadata is the optional metadata for the Room.
+    """
 
-    metadata: dict[str, str] = Field(
-        default_factory=dict,
-        description="Metadata to be sent to the Room",
-    )
-
-    role: str = Field(
-        description="Role of the User",
-    )
+    role: str
+    """
+    Role is the role of the local user in the Room.
+    """
 
 
 class RTC:
@@ -80,6 +86,17 @@ class RTC:
     @property
     def room(self):
         return self._huddle_client.room
+    
+    async def produce(self, options:ProduceOptions):
+        """
+        Produces Media Stream Tracks to the Room.
+        """
+        local_peer = self.huddle_client.local_peer
+
+        if not local_peer:
+            raise ValueError("Local Peer is not created, make sure to connect to the Room before producing.")
+
+        await local_peer.produce(options=options)
 
     async def join(self):
         """

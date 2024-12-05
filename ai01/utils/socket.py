@@ -1,7 +1,7 @@
 import asyncio
 import json
 import logging
-from typing import Any, Dict, Optional, Union
+from typing import Any, Dict, Optional
 
 import websockets
 
@@ -57,9 +57,10 @@ class SocketClient:
         """
         try:
             self._logger.info(f"Attempting to connect to WebSocket at {self.url}")
+            
             self.__ws = await websockets.connect(self.url, extra_headers=self.headers)
+            
             self._logger.info("WebSocket connection established")
-            asyncio.create_task(self._listen())
         except Exception as e:
             self._logger.error(f"Error connecting to WebSocket: {e}")
             raise
@@ -74,50 +75,11 @@ class SocketClient:
 
             dump_data = json.dumps(message) if self.json else message
 
-            self._logger.info(f"Sending message: {dump_data}")
             await self.__ws.send(dump_data)
 
         except Exception as e:
             self._logger.error(f"Error sending message: {e}")
             raise
-
-    async def _listen(self):
-        """
-        Listen for messages from the WebSocket server.
-        """
-        try:
-            if not self.__ws:
-                raise Exception("WebSocket is not connected")
-
-            self._logger.info("Started listening to WebSocket messages")
-            async for message in self.__ws:
-                self._logger.debug(f"Received message: {message}")
-                await self._handle_message(message)
-        except Exception as e:
-            self._logger.error(f"Error listening to WebSocket: {e}")
-            raise
-
-    async def _handle_message(self, message: Union[str, bytes]):
-        """
-        Handle the message received from the WebSocket.
-        """
-        try:
-            message_data = json.loads(message)
-            self._logger.info(
-                f"Handling message of type: {message_data.get('type', 'unknown')}"
-            )
-            await self.on_message(message_data)
-        except json.JSONDecodeError as e:
-            self._logger.error(f"Failed to decode message: {str(e)}")
-        except Exception as e:
-            self._logger.error(f"Unexpected error handling message: {str(e)}")
-            self._logger.exception(e)
-
-    async def on_message(self, message_data: Dict[str, str]):
-        """
-        Placeholder for handling messages, to be implemented by subclasses or instances.
-        """
-        self._logger.info(f"Received message: {message_data}")
 
     def close(self):
         """

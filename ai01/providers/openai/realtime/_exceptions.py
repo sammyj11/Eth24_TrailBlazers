@@ -39,3 +39,17 @@ class RealtimeModelSocketError(RealtimeModelError):
             - Make sure the RealTime API is up and running.
             """
         )
+
+class RealtimeModelTrackInvalidError(RealtimeModelError):
+    """Exception raised for errors in the Realtime Model, when Track is invalid"""
+
+    def __init__(
+        self,
+    ):
+        super().__init__(
+            """
+            Track is invalid, Possible ways to fix this:
+            - Make sure the Track is of type `audio`.
+            - Make sure the Track is not None.
+            """
+        )

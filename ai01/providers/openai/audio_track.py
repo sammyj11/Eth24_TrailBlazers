@@ -36,6 +36,7 @@ class AudioTrack(MediaStreamTrack):
     kind = "audio"
 
     def __init__(self, options=AudioTrackOptions()):
+        print("AudioTrack __init__")
         super().__init__()
 
         # Audio configuration

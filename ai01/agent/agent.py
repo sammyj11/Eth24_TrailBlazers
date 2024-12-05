@@ -1,8 +1,9 @@
+import logging
 from typing import Optional
 
-from aiortc.mediastreams import MediaStreamTrack
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
+from ..providers.openai.audio_track import AudioTrack
 from ..rtc import RTC, RTCOptions
 from ..utils.emitter import EnhancedEventEmitter
 from ._exceptions import RoomNotConnectedError, RoomNotCreatedError
@@ -17,14 +18,12 @@ class AgentOptions(BaseModel):
         audio_track (MediaStreamTrack): Audio Stream Track for the Agent.
     """
 
-    rtc_options: RTCOptions = Field(
-        description="RTC Options for the Agent",
-    )
+    rtc_options: RTCOptions
     """
     RTC Options is the configuration for the RTC.
     """
 
-    audio_track: Optional[MediaStreamTrack]
+    audio_track: Optional[AudioTrack]
     """
     Audio Track is the Audio Stream Track for the Agent.
     """
@@ -33,6 +32,8 @@ class AgentOptions(BaseModel):
         arbitrary_types_allowed = True
 
 
+
+logger = logging.getLogger("Agent")
 class Agent(EnhancedEventEmitter):
     """
     Agents is defined as the higher level user which is its own entity and has exposed APIs to
@@ -53,9 +54,16 @@ class Agent(EnhancedEventEmitter):
         # Audio Track is the Audio Stream Track for the Agent.
         self.audio_track = options.audio_track
 
+        # Logger for the Agent.
+        self._logger = logger.getChild("Agent")
+
     @property
     def rtc(self):
         return self.__rtc
+    
+    @property
+    def logger(self):
+        return self._logger
 
     @property
     def room(self):
@@ -88,6 +96,8 @@ class Agent(EnhancedEventEmitter):
                 print("Room successfully joined!")
             ```
         """
+        self.logger.info("Joining Agent to the dRTC Network")
+
         room = await self.__rtc.join()
 
         if not room:
@@ -99,11 +109,11 @@ class Agent(EnhancedEventEmitter):
         """
         Connects the Agent to the Room, This is only available after the Agent is joined to the dRTC Network.
         """
+        self.logger.info("Connecting Agent to the Room")
+
         room = self.__rtc.room
 
         if not room:
             raise RoomNotCreatedError()
 
         await room.connect()
-
-    
