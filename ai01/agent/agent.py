@@ -4,6 +4,7 @@ from aiortc.mediastreams import MediaStreamTrack
 from pydantic import BaseModel, Field
 
 from ..rtc import RTC, RTCOptions
+from ..utils.emitter import EnhancedEventEmitter
 from ._exceptions import RoomNotConnectedError, RoomNotCreatedError
 
 
@@ -26,7 +27,7 @@ class AgentOptions(BaseModel):
         arbitrary_types_allowed = True
 
 
-class Agent:
+class Agent(EnhancedEventEmitter):
     """
     Agents is defined as the higher level user which is its own entity and has exposed APIs to
     interact with different Models and Outer World using dRTC.
@@ -98,3 +99,5 @@ class Agent:
             raise RoomNotCreatedError()
 
         await room.connect()
+
+    

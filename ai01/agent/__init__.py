@@ -1,8 +1,11 @@
 from .agent import Agent, AgentOptions
+from ._models import AgentEventType, AgentEvent
 
 __all__ = [
     "Agent",
     "AgentOptions",
+    "AgentEventType",
+    "AgentEvent",
 ]
 
 # Cleanup docs of unexported modules

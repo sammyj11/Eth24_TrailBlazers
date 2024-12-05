@@ -7,6 +7,7 @@ from pydantic import BaseModel
 from ai01.agent import Agent
 from ai01.utils.socket import SocketClient
 
+from ....utils.emitter import EnhancedEventEmitter
 from . import _api, _exceptions
 
 logging.basicConfig(level=logging.INFO)
@@ -92,7 +93,7 @@ class RealTimeModelOptions(BaseModel):
         arbitrary_types_allowed = True
 
 
-class RealTimeModel:
+class RealTimeModel(EnhancedEventEmitter):
     def __init__(self, agent: Agent, options: RealTimeModelOptions):
         # Agent is the instance which is interacting with the RealTimeModel.
         self.agent = agent
@@ -118,7 +119,7 @@ class RealTimeModel:
         # Logger for RealTimeModel.
         self._logger = logger.getChild(f"RealTimeModel-{self._opts.model}")
 
-    def session_update(self):
+    async def session_update(self):
         """
         Session Updated is the Event Handler for the Session Update Event.
         """
@@ -149,7 +150,7 @@ class RealTimeModel:
                 "type": "session.update",
             }
 
-            self.loop.create_task(self.socket.send(payload))
+            await self.socket.send(payload)
 
         except Exception as e:
             self._logger.error(f"Error Sending Session Update Event: {e}")
@@ -166,10 +167,12 @@ class RealTimeModel:
 
             await self.socket.connect()
 
+            await self.session_update()
+
             self._logger.info("Connected to OpenAI RealTime Model")
 
-        except _exceptions.RealtimeModelNotConnectedError as e:
-            raise e
+        except _exceptions.RealtimeModelNotConnectedError:
+            raise 
 
         except Exception as e:
             self._logger.error(f"Error connecting to RealTime API: {e}")

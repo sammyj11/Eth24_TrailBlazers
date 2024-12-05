@@ -2,9 +2,11 @@ from . import _api as api
 from ._api import (
     AudioFormat,
     ClientEvent,
+    ClientEventType,
     Modality,
     RealTimeModels,
     ServerEvent,
+    ServerEventType,
     ToolChoice,
     Voice,
 )
@@ -21,6 +23,8 @@ __all__ = [
     "Modality",
     "AudioFormat",
     "ToolChoice",
+    "ClientEventType",
+    "ServerEventType",
 ]
 
 

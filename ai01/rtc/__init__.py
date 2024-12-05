@@ -1,9 +1,9 @@
 from huddle01 import Role
-from huddle01.room import RoomEvents
+from huddle01.room import RoomEvents, RoomEventsType
 
 from .rtc import RTC, HuddleClientOptions, RTCOptions
 
-__all__ = ["RTC", "RTCOptions", "HuddleClientOptions", "Role", "RoomEvents"]
+__all__ = ["RTC", "RTCOptions", "HuddleClientOptions", "Role", "RoomEvents", "RoomEventsType"]
 
 
 # Cleanup docs of unexported modules
