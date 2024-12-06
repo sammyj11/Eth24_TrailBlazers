@@ -3,8 +3,8 @@ import logging
 import os
 
 from dotenv import load_dotenv
-from .prompt import bot_prompt
-from ai01.agent import Agent, AgentEventsData, AgentOptions, AgentsEvents
+
+from ai01.agent import Agent, AgentOptions, AgentsEvents
 from ai01.providers.openai import AudioTrack
 from ai01.providers.openai.realtime import RealTimeModel, RealTimeModelOptions
 from ai01.rtc import (
@@ -15,6 +15,8 @@ from ai01.rtc import (
     RoomEventsData,
     RTCOptions,
 )
+
+from .prompt import bot_prompt
 
 load_dotenv()
 
@@ -118,25 +120,25 @@ async def main():
 
 
         # # Agent Events
-        # @agent.on(AgentsEvents.AgentConnected)
-        # def on_agent_connected(data: AgentEventsData.Connected):
-        #     logger.info(f"Agent Connected: {data['peer_id']}")
+        @agent.on(AgentsEvents.Connected)
+        def on_agent_connected():
+            logger.info("Agent Connected")
 
-        # @agent.on(AgentsEvents.AgentDisconnected)
-        # def on_agent_disconnected(data: AgentEventsData.Disconnected):
-        #     logger.info(f"Agent Disconnected: {data['peer_id']}")
+        @agent.on(AgentsEvents.Disconnected)
+        def on_agent_disconnected():
+            logger.info("Agent Disconnected")
 
-        # @agent.on(AgentsEvents.AgentSpeaking)
-        # def on_agent_speaking(data: AgentEventsData.Speaking):
-        #     logger.info(f"Agent Speaking: {data['peer_id']}")
+        @agent.on(AgentsEvents.Speaking)
+        def on_agent_speaking():
+            logger.info("Agent Speaking")
 
-        # @agent.on(AgentsEvents.AgentListening)
-        # def on_agent_listening(data: AgentEventsData.Listening):
-        #     logger.info(f"Agent Listening: {data['peer_id']}")
+        @agent.on(AgentsEvents.Listening)
+        def on_agent_listening():
+            logger.info("Agent Listening")
 
-        # @agent.on(AgentsEvents.AgentThinking)
-        # def on_agent_thinking(data: AgentEventsData.Thinking):
-        #     logger.info(f"Agent Thinking: {data['peer_id']}")
+        @agent.on(AgentsEvents.Thinking)
+        def on_agent_thinking():
+            logger.info("Agent Thinking")
 
 
         # Connect to the LLM to the Room

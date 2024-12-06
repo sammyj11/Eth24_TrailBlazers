@@ -7,7 +7,7 @@ from typing import Literal, Optional, Union
 
 from pydantic import BaseModel
 
-from ai01.agent import Agent
+from ai01.agent import Agent, AgentsEvents
 from ai01.utils.socket import SocketClient
 
 from ....utils.emitter import EnhancedEventEmitter
@@ -340,6 +340,11 @@ class RealTimeModel(EnhancedEventEmitter):
         """
         self._logger.info("Speech Started")
 
+        if self.agent.audio_track:
+            self.agent.audio_track.flush_audio()
+
+            self.agent.emit(AgentsEvents.Listening)
+
     def _handle_input_audio_buffer_speech_stopped(self, data: dict):
         """
         Speech Stopped is the Event Handler for the Speech Stopped Event.
@@ -397,7 +402,7 @@ class RealTimeModel(EnhancedEventEmitter):
         base64_audio = data.get("delta")
 
         if base64_audio and self.agent.audio_track:
-            self._logger.info("Enqueue Audio")
+            self.agent.emit(AgentsEvents.Speaking)
             self.agent.audio_track.enqueue_audio(base64_audio=base64_audio)
 
     def _handle_response_audio_transcript_delta(self, data: dict):
