@@ -200,7 +200,7 @@ on [pypi](https://pypi.org/project/huddle01/)
 # Contributing 🤝
 > This Repository is under active development, and we are actively looking for contributors to help us build this project.
 
-If you are interested in contributing to this project, please refer to the [Contributing Guidelines](CONTRIBUTING.md).
+If you are interested in contributing to this project, please refer to the [Contributing Guidelines](https://github.com/Huddle01/huddle01-ai/blob/main/CONTRIBUTING.md).
 
 Keep checking for Latest Issues and PRs, and feel free to open an Issue or PR for any feature or bug.
 
