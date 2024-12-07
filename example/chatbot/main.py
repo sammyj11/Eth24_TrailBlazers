@@ -16,9 +16,18 @@ from ai01.rtc import (
     RTCOptions,
 )
 
-from .prompt import bot_prompt
+from prompt import bot_prompt
 
 load_dotenv()
+
+import uuid
+import time
+
+# Using UUID (most reliable)
+# room_id = str(uuid.uuid4())
+
+# Or using timestamp
+# room_id = f"room-{int(time.time())}"
 
 
 logging.basicConfig(level=logging.INFO)
@@ -29,12 +38,15 @@ async def main():
     try:
         # Huddle01 API Key
         huddle_api_key = os.getenv("HUDDLE_API_KEY")
+        huddle_api_key="ak_gUgjnRb9yCbHgQZs"
 
         # Huddle01 Project ID
         huddle_project_id = os.getenv("HUDDLE_PROJECT_ID")
+        huddle_project_id="pi_WYxyQg6Cq6nEkdPs"
 
         # OpenAI API Key
         openai_api_key = os.getenv("OPENAI_API_KEY")
+        openai_api_key="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"
 
         if not huddle_api_key or not huddle_project_id or not openai_api_key:
             raise ValueError("Required Environment Variables are not set")
@@ -43,7 +55,7 @@ async def main():
         rtcOptions = RTCOptions(
             api_key=huddle_api_key,
             project_id=huddle_project_id,
-            room_id="DAAO",
+            room_id="frf-fjxo-yhl",
             role=Role.HOST,
             metadata={"displayName": "Agent"},
             huddle_client_options=HuddleClientOptions(
