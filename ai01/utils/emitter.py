@@ -1,9 +1,11 @@
 from pyee import AsyncIOEventEmitter
+import asyncio
 
 
 class EnhancedEventEmitter(AsyncIOEventEmitter):
     def __init__(self, loop=None):
-        super(EnhancedEventEmitter, self).__init__(loop=loop)
+        self._emitter_lock = asyncio.Lock()
+        super().__init__(loop=loop)
 
     async def emit_for_results(self, event, *args, **kwargs):
         results = []

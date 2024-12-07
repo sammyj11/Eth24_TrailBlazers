@@ -1,6 +1,8 @@
 import json
 import logging
 
+import asyncio
+
 from huddle01 import (
     AccessToken,
     AccessTokenData,
@@ -68,6 +70,8 @@ class RTC:
             project_id=self._options.project_id,
             options=self._options.huddle_client_options,
         )
+
+        self._lock = asyncio.Lock()
 
     def __str__(self):
         return f"RTC Room: {self._options.room_id}"
@@ -147,7 +151,7 @@ class RTC:
             ),
             role=Role(self._options.role),
         )
-
+        # breakpoint()
         accessToken = AccessToken(
             data=accessTokenData,
         )

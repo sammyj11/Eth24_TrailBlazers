@@ -5,8 +5,10 @@ import os
 from dotenv import load_dotenv
 
 from ai01.agent import Agent, AgentOptions, AgentsEvents
-from ai01.providers.openai import AudioTrack
-from ai01.providers.openai.realtime import RealTimeModel, RealTimeModelOptions
+# from ai01.providers.openai import AudioTrack
+from ai01.providers.Anthropic.textmodel import TextModel
+
+from ai01.providers.Anthropic.realtime.realtime_model import RealTimeModel, RealTimeModelOptions
 from ai01.rtc import (
     HuddleClientOptions,
     ProduceOptions,
@@ -72,8 +74,9 @@ async def main():
         # OpenAI API Key
         openai_api_key = os.getenv("OPENAI_API_KEY")
         openai_api_key="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"
+        anthropic_api_key="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"
 
-        if not huddle_api_key or not huddle_project_id or not openai_api_key:
+        if not huddle_api_key or not huddle_project_id or not anthropic_api_key:
             raise ValueError("Required Environment Variables are not set")
 
         # RTCOptions is the configuration for the RTC
@@ -94,7 +97,7 @@ async def main():
         # breakpoint()
 
         agent = Agent(
-            options=AgentOptions(rtc_options=rtcOptions, audio_track=AudioTrack(), _lock=_lock),
+            options=AgentOptions(rtc_options=rtcOptions, text_track=TextModel(), _lock=_lock),
         )
 
         # breakpoint()
@@ -102,14 +105,22 @@ async def main():
         # RealTimeModel is the Model which is going to be used by the Agent
         llm = RealTimeModel(
             agent=agent,
-            options=RealTimeModelOptions(
-                oai_api_key=openai_api_key,
-                instructions=bot_prompt,
-            ),
+            options = RealTimeModelOptions(
+    anthropic_api_key=anthropic_api_key,
+    model='claude-2.0',
+    instructions=bot_prompt,
+    temperature=0.7,
+    max_tokens=1500,
+    stop_sequences=["\nHuman:", "\nAssistant:"],
+    top_p=0.9,
+    top_k=50
+),
         )
 
         # Join the dRTC Network, which creates a Room instance for the Agent to Join.
         room = await agent.join()
+
+        breakpoint()
 
         # Room Events
         # @room.on(RoomEvents.RoomJoined)
@@ -135,6 +146,8 @@ async def main():
         # @room.on(RoomEvents.RemoteProducerClosed)
         # def on_remote_producer_closed(data: RoomEventsData.RemoteProducerClosed):
         #     logger.info(f"Remote Producer Closed: {data['producer_id']}")
+
+        
 
         @room.on(RoomEvents.NewConsumerAdded)
         def on_remote_consumer_added(data: RoomEventsData.NewConsumerAdded):
@@ -191,13 +204,15 @@ async def main():
         # Connect the Agent to the Room
         await agent.connect()
 
-        if agent.audio_track is not None:
-            await agent.rtc.produce(
-                options=ProduceOptions(
-                    label="audio",
-                    track=agent.audio_track,
-                )
-            )
+        # breakpoint()
+
+        # if agent.text_track is not None:
+        #     await agent.rtc.produce(
+        #         options=ProduceOptions(
+        #             label="audio",
+        #             track=agent.text_track,
+        #         )
+        #     )
 
         # @agent.on(RoomEvents.NewDataMessage)
         # def on_new_data_message(data: AgentEvent.NewDataMessage):

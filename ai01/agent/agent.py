@@ -1,12 +1,16 @@
 import logging
 from typing import Optional
+import asyncio
 
 from pydantic import BaseModel
 
 from ..providers.openai.audio_track import AudioTrack
+from ..providers.Anthropic.textmodel import TextModel
 from ..rtc import RTC, RTCOptions
 from ..utils.emitter import EnhancedEventEmitter
 from ._exceptions import RoomNotConnectedError, RoomNotCreatedError
+
+
 
 
 class AgentOptions(BaseModel):
@@ -28,6 +32,16 @@ class AgentOptions(BaseModel):
     Audio Track is the Audio Stream Track for the Agent.
     """
 
+    text_track: Optional[TextModel]
+    """
+    Text Track is the Text input for the Agent.
+    """
+
+    _lock: Optional[asyncio.Lock]
+    """
+    Optional asyncio lock for synchronization.
+    """
+
     class Config:
         arbitrary_types_allowed = True
 
@@ -45,17 +59,29 @@ class Agent(EnhancedEventEmitter):
     """
 
     def __init__(self, options: AgentOptions):
-        # Options is the configuration for the Agent.
+        super().__init__()
         self.options = options
 
         # RTC is the Real Time Communication Handler for the Agent.
         self.__rtc = RTC(options.rtc_options)
 
-        # Audio Track is the Audio Stream Track for the Agent.
-        self.audio_track = options.audio_track
+        # Initialize Agent-specific lock
+        self._agent_lock = options.agent_lock if hasattr(options, 'agent_lock') else asyncio.Lock()
+
+        # Text Track is the Text Stream Track for the Agent.
+        self.text_track = options.text_track
+
+        # self.audio_track = options.audio_track
 
         # Logger for the Agent.
         self._logger = logger.getChild("Agent")
+
+    @property
+    def agent_lock(self):
+        """
+        Returns the Agent-specific lock.
+        """
+        return self._agent_lock
 
     @property
     def rtc(self):
@@ -117,3 +143,4 @@ class Agent(EnhancedEventEmitter):
             raise RoomNotCreatedError()
 
         await room.connect()
+

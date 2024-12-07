@@ -37,6 +37,7 @@ class AudioTrack(MediaStreamTrack):
 
     def __init__(self, options=AudioTrackOptions()):
         print("AudioTrack __init__")
+        breakpoint()
         super().__init__()
 
         # Audio configuration
@@ -53,6 +54,7 @@ class AudioTrack(MediaStreamTrack):
         # Audio FIFO buffer
         self.audio_fifo = AudioFifo()
         self.fifo_lock = threading.Lock()
+        self._lock = threading.Lock()
 
     def __repr__(self) -> str:
         return f"<AudioTrack kind={self.kind} state={self.readyState}> sample_rate={self.sample_rate} channels={self.channels} sample_width={self.sample_width}>"

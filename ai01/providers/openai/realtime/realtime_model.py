@@ -5,6 +5,8 @@ import logging
 import uuid
 from typing import Literal, Optional, Union
 
+import asyncio
+
 from pydantic import BaseModel
 
 from ai01.agent import Agent, AgentsEvents
@@ -101,6 +103,8 @@ class RealTimeModel(EnhancedEventEmitter):
     def __init__(self, agent: Agent, options: RealTimeModelOptions):
         # Agent is the instance which is interacting with the RealTimeModel.
         self.agent = agent
+
+        self._lock = asyncio.Lock()
 
         self._opts = options
         # Loop is the Event Loop to be used for the RealTimeModel.
