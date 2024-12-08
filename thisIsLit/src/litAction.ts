@@ -15,23 +15,43 @@ async function _litActionCode() {
 
   // try {
     
-  //   if (flag) {
+    if (!flag) {
       console.log("this is the signed txn : ", signedTx);
       const txResponse = await provider.sendTransaction(signedTx);
-      // console.log( JSON.stringify({
-      //       txHash: txResponse.hash,
-      //       status: "Transaction submitted successfully",
-      //     }));
+      console.log( JSON.stringify({
+            txHash: txResponse.hash,
+            status: "Transaction submitted successfully",
+          }));
       LitActions.setResponse({ response: txResponse });
-  //   } else {
-  //     // let razorPayResponse;
-  //     // LitActions.setResponse({ response: razorPayResponse });
+    } else {
+      let razorPayResponse = await var instance = new Razorpay({ key_id: 'YOUR_KEY_ID', key_secret: 'YOUR_SECRET' })
 
-  //     LitActions.setResponse({ response: razorPayResponse });
-  //   }
-  // } catch (e) {
-  //   LitActions.setResponse({ response: e.message });
-  // }
+      instance.paymentLink.create({
+        upi_link: true,
+        amount: 500,
+        currency: "INR",
+        accept_partial: false,
+        first_min_partial_amount: 100,
+        description: "For XYZ purpose",
+        customer: {
+          name: "Gaurav Kumar",
+          email: "gaurav.kumar@example.com",
+          contact: "+919000090000"
+        },
+        notify: {
+          sms: true,
+          email: true
+        },
+        reminder_enable: true,
+        notes: {
+          policy_name: "Jeevan Bima"
+        }
+      })
+      LitActions.setResponse({ response: razorPayResponse });
+    }
+  } catch (e) {
+    LitActions.setResponse({ response: e.message });
+  }
 };
 
 export const litActionCode = `(${_litActionCode.toString()})();`;
