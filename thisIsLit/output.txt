@@ -1,0 +1,11 @@
+[dotenvx@0.44.6] missing .env file (/Users/0xprinc/Desktop/developer-guides-code/pkp-sign-openai/nodejs/.env)
+? add one with [echo "HELLO=World" > .env] and re-run [dotenvx run -- mocha test/openAISignInLitAction.spec.ts]
+[dotenvx@0.44.6] injecting env (0)
+
+
+  signingOpenAI
+    ✔ should run the function successfully
+
+
+  1 passing (9ms)
+
